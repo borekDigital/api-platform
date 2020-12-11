@@ -27,6 +27,11 @@ $ docker-compose up
 * [https://localhost/docs](https://localhost/docs) (for rest-api docs) or
 * [https://localhost/graphql](https://localhost/graphql) (for graphql-api docs)
 
+## Update dependencies
+```bash
+# Update docker images, dependencies and symfony recipes
+$ sh update-deps.sh
+```
 
 ## Further Information
 For detailed explanation on how things work, check out the [docs](https://api-platform.com/docs).
