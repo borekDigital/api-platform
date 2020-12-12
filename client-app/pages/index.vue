@@ -70,6 +70,14 @@
           >
             Continue
           </v-btn>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            nuxt
+            to="/greetings"
+          >
+            Greetings
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
