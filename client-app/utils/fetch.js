@@ -1,0 +1,72 @@
+import isObject from 'lodash/isObject'
+import { ENTRYPOINT } from '../config/entrypoint'
+import SubmissionError from '../error/SubmissionError'
+import { normalize } from './hydra'
+
+const MIME_TYPE = 'application/ld+json'
+
+const makeParamArray = (key, arr) =>
+  arr.map(val => `${key}[]=${val}`).join('&')
+
+export default function (id, options = {}) {
+  if (typeof options.headers === 'undefined') {
+    options.headers = {}
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(options.headers, 'Accept')) {
+    options.headers = { ...options.headers, Accept: MIME_TYPE }
+  }
+
+  if (
+    undefined !== options.body &&
+    !(options.body instanceof FormData) &&
+    !Object.prototype.hasOwnProperty.call(options.headers, 'Content-Type')
+  ) {
+    options.headers = { ...options.headers, 'Content-Type': MIME_TYPE }
+  }
+
+  if (options.params) {
+    const params = normalize(options.params)
+    const queryString = Object.keys(params)
+      .map(key =>
+        Array.isArray(params[key])
+          ? makeParamArray(key, params[key])
+          : `${key}=${params[key]}`,
+      )
+      .join('&')
+    id = `${id}?${queryString}`
+  }
+
+  const entryPoint = ENTRYPOINT + (ENTRYPOINT.endsWith('/') ? '' : '/')
+
+  const payload = options.body && JSON.parse(options.body)
+  if (isObject(payload) && payload['@id']) { options.body = JSON.stringify(normalize(payload)) }
+
+  return global.fetch(new URL(id, entryPoint), options).then((response) => {
+    if (response.ok) { return response }
+
+    return response.json().then(
+      (json) => {
+        const error =
+          json['hydra:description'] ||
+          json['hydra:title'] ||
+          'An error occurred.'
+
+        if (!json.violations) { throw new Error(error) }
+
+        const errors = { _error: error }
+        json.violations.forEach(violation =>
+          errors[violation.propertyPath]
+            ? (errors[violation.propertyPath] +=
+            '\n' + errors[violation.propertyPath])
+            : (errors[violation.propertyPath] = violation.message),
+        )
+
+        throw new SubmissionError(errors)
+      },
+      () => {
+        throw new Error(response.statusText || 'An error occurred.')
+      },
+    )
+  })
+}
