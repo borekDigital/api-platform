@@ -5,7 +5,7 @@ docker-compose pull
 docker-compose build
 
 # Update deps
-docker-compose run php composer update
+docker-compose run php composer update --ignore-platform-req=php
 docker-compose run pwa /bin/sh -c 'yarn install && yarn upgrade'
 
 # Update the Symfony skeleton
@@ -20,4 +20,4 @@ sed -i.bak 's;^MERCURE_PUBLISH_URL=http://mercure/.well-known/mercure$;MERCURE_P
 
 rm .env.bak
 
-echo 'Run `docker-compose up --build --force-recreate` now and check that everything is fine!'
+echo "Run 'docker-compose up --build --force-recreate' now and check that everything is fine!"
