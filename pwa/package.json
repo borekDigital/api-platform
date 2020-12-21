@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@api-platform/admin": "^2.2.0",
+    "@api-platform/admin": "^2.5.6",
     "next": "^9.5.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
