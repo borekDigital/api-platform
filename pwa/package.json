@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@api-platform/admin": "^2.5.8",
-    "next": "^10.0.5",
+    "next": "^10.2.2",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },
